@@ -5,6 +5,32 @@ import (
 	"reflect"
 )
 
+var (
+	bytesType = reflect.TypeOf([]byte(nil))
+)
+
+func EnsureString(v reflect.Value) (string, error) {
+	if v.Kind() == reflect.String {
+		return v.String(), nil
+	}
+	if v.Type() == bytesType {
+		return string(v.Interface().([]byte)), nil
+	}
+
+	return "", fmt.Errorf("cannot convert %v to string", v.Type())
+}
+
+func StringOrBytes(v reflect.Value) (isString bool, str string, isBytes bool, bs []byte) {
+	if v.Kind() == reflect.String {
+		isString = true
+		str = v.String()
+	} else if v.Kind() == reflect.Slice && v.Type() == bytesType {
+		isBytes = true
+		bs = v.Interface().([]byte)
+	}
+	return
+}
+
 // IsEmpty returns whether a value is empty or not.
 func IsEmpty(rv reflect.Value) bool {
 	switch rv.Kind() {
