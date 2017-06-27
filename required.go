@@ -17,7 +17,7 @@ func (r *requiredRule) Apply(f FieldInfo) error {
 	return nil
 }
 
-func (r *requiredRule) Format(format string) BuiltInFieldRule {
+func (r *requiredRule) ErrorFormat(format string) BuiltInFieldRule {
 	return &requiredRule{
 		format: format,
 	}

@@ -67,7 +67,7 @@ func LT(v interface{}) BuiltInFieldRule {
 	}
 }
 
-func (r *thresholdRule) Format(format string) BuiltInFieldRule {
+func (r *thresholdRule) ErrorFormat(format string) BuiltInFieldRule {
 	return &thresholdRule{
 		threshold: r.threshold,
 		operator:  r.operator,

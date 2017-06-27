@@ -8,7 +8,7 @@ type FieldRule interface {
 // BuiltInFieldRule is validation rule for validation field that can change error format.
 type BuiltInFieldRule interface {
 	FieldRule
-	Format(format string) BuiltInFieldRule
+	ErrorFormat(format string) BuiltInFieldRule
 }
 
 type fieldRule struct {

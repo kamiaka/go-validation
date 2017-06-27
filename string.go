@@ -14,7 +14,7 @@ func NewStringRule(validator stringValidator) BuiltInFieldRule {
 	}
 }
 
-func (r *stringRule) Format(format string) BuiltInFieldRule {
+func (r *stringRule) ErrorFormat(format string) BuiltInFieldRule {
 	return &stringRule{
 		validate: r.validate,
 		format:   format,

@@ -33,17 +33,17 @@ func MaxLength(max int) BuiltInFieldRule {
 
 // StringLength returns a validation rule that checks if a string length is within the specified range.
 func StringLength(min int, max int) BuiltInFieldRule {
-	return Length(min, max).Format("%[1]v must between %[2]v and %[3]v character(s)")
+	return Length(min, max).ErrorFormat("%[1]v must between %[2]v and %[3]v character(s)")
 }
 
 // StringMinLength returns a validation rule that checks if a string length is within the specified range.
 func StringMinLength(min int) BuiltInFieldRule {
-	return MinLength(min).Format("%[1]v must be %[2]v character(s) or more")
+	return MinLength(min).ErrorFormat("%[1]v must be %[2]v character(s) or more")
 }
 
 // StringMaxLength returns a validation rule that checks if a string length is within the specified range.
 func StringMaxLength(max int) BuiltInFieldRule {
-	return MaxLength(max).Format("%[1]v must be %[2]v character(s) or less")
+	return MaxLength(max).ErrorFormat("%[1]v must be %[2]v character(s) or less")
 }
 
 func (r *lengthRule) Apply(f FieldInfo) error {
@@ -70,7 +70,7 @@ func (r *lengthRule) Apply(f FieldInfo) error {
 	return nil
 }
 
-func (r *lengthRule) Format(format string) BuiltInFieldRule {
+func (r *lengthRule) ErrorFormat(format string) BuiltInFieldRule {
 	return &lengthRule{
 		min:    r.min,
 		max:    r.max,
