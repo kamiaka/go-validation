@@ -9,19 +9,15 @@ type requiredRule struct {
 	format string
 }
 
-func (r *requiredRule) Validate(f FieldLevel) FieldError {
+func (r *requiredRule) Apply(f FieldInfo) error {
 	if IsEmpty(f.Value()) {
-		return &fieldError{
-			field:  f,
-			format: r.format,
-			params: []interface{}{f.Label},
-		}
+		return newFieldError(f, r.format, f.Label())
 	}
 
 	return nil
 }
 
-func (r *requiredRule) SetFormat(format string) *requiredRule {
+func (r *requiredRule) Format(format string) BuiltInFieldRule {
 	return &requiredRule{
 		format: format,
 	}
