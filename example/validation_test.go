@@ -60,7 +60,7 @@ var mustUsesMail validation.FieldRuleFunc = func(fi validation.FieldInfo, e vali
 	if validation.IsEmpty(fi.Value()) {
 		return nil
 	}
-	s := fi.Parent().Interface().(*CreateUserRequest)
+	s := fi.Parent().Interface().(CreateUserRequest)
 	if s.UsesMail != nil && *s.UsesMail != true {
 		return e("%s is bad!", fi.Label())
 	}
