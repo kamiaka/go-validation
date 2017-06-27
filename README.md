@@ -23,3 +23,9 @@ v.Validate(
 ```go
 validation.Min(21).Format("OMG! %[1]v must be %[2]v or more.")
 ```
+
+## Credits
+
+This package inspired by [ozzo-validation](https://github.com/go-ozzo/ozzo-validation), and it has been modified and used.
+
+
