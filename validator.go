@@ -15,10 +15,6 @@ type Validator interface {
 	Validate(structPtr interface{}, vs ...StructRule) error
 }
 
-type Validatable interface {
-	Validate(StructInfo) error
-}
-
 type ValidatorConfig struct {
 	fieldNameFunc fieldNameFunc
 }
