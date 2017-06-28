@@ -1,8 +1,13 @@
 package validation
 
+// Required message format
+const (
+	MsgRequiredFormat = "%[1]s is requried"
+)
+
 // Required is validation rule that checks value is not empty.
 var Required = &requiredRule{
-	format: "%[1]s is requried",
+	format: MsgRequiredFormat,
 }
 
 type requiredRule struct {

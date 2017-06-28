@@ -1,5 +1,14 @@
 package validation
 
+const (
+	MsgInvalidLength = "%[1]v must between %[2]v and %[3]v"
+	MsgMinLength = "%[1]v must be %[2]v or more"
+	MsgMaxLength = "%[1]v must be %[2]v or less"
+	MsgStringLength = "%[1]v must between %[2]v and %[3]v character(s)"
+	MsgStringMinLength = "%[1]v must be %[2]v character(s) or more"
+	MsgStringMaxLength = "%[1]v must be %[2]v character(s) or less"
+)
+
 type lengthRule struct {
 	min    *int
 	max    *int
@@ -11,7 +20,7 @@ func Length(min int, max int) BuiltInFieldRule {
 	return &lengthRule{
 		min:    &min,
 		max:    &max,
-		format: "%[1]v must between %[2]v and %[3]v",
+		format: MsgInvalidLength,
 	}
 }
 
@@ -19,7 +28,7 @@ func Length(min int, max int) BuiltInFieldRule {
 func MinLength(min int) BuiltInFieldRule {
 	return &lengthRule{
 		min:    &min,
-		format: "%[1]v must be %[2]v or more",
+		format: MsgMinLength,
 	}
 }
 
@@ -27,23 +36,23 @@ func MinLength(min int) BuiltInFieldRule {
 func MaxLength(max int) BuiltInFieldRule {
 	return &lengthRule{
 		max:    &max,
-		format: "%[1]v must be %[2]v or less",
+		format: MsgMaxLength,
 	}
 }
 
 // StringLength returns a validation rule that checks if a string length is within the specified range.
 func StringLength(min int, max int) BuiltInFieldRule {
-	return Length(min, max).ErrorFormat("%[1]v must between %[2]v and %[3]v character(s)")
+	return Length(min, max).SetErrorFormat(MsgStringLength)
 }
 
 // StringMinLength returns a validation rule that checks if a string length is within the specified range.
 func StringMinLength(min int) BuiltInFieldRule {
-	return MinLength(min).ErrorFormat("%[1]v must be %[2]v character(s) or more")
+	return MinLength(min).SetErrorFormat(MsgStringMinLength)
 }
 
 // StringMaxLength returns a validation rule that checks if a string length is within the specified range.
 func StringMaxLength(max int) BuiltInFieldRule {
-	return MaxLength(max).ErrorFormat("%[1]v must be %[2]v character(s) or less")
+	return MaxLength(max).SetErrorFormat(MsgStringMaxLength)
 }
 
 func (r *lengthRule) Apply(f FieldValue) error {

@@ -5,6 +5,11 @@ import (
 	"regexp"
 )
 
+// error message format
+const (
+	MsgMatchFormat = "%[1]v must be in a valid format"
+)
+
 type matchRule struct {
 	re     *regexp.Regexp
 	format string
@@ -13,7 +18,7 @@ type matchRule struct {
 func Match(re *regexp.Regexp) BuiltInFieldRule {
 	return &matchRule{
 		re:     re,
-		format: "%[1]v must be in a valid format",
+		format: MsgMatchFormat,
 	}
 }
 

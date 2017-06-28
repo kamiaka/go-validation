@@ -6,6 +6,14 @@ import (
 	"time"
 )
 
+// Error message format.
+const (
+	MsgGTEFormat = "%[1]v must be greater than equal %[2]v"
+	MsgGTFormat  = "%[1]v must be greater than %[2]v"
+	MsgLTEFormat = "%[1]v must be less than equal %[2]v"
+	MsgLTFormat  = "%[1]v must be less than %[2]v"
+)
+
 const (
 	greaterThan = iota
 	greaterThanEqual
@@ -36,7 +44,7 @@ func GTE(v interface{}) BuiltInFieldRule {
 	return &thresholdRule{
 		threshold: v,
 		operator:  greaterThanEqual,
-		format:    "%[1]v must be greater than equal %[2]v",
+		format:    MsgGTEFormat,
 	}
 }
 
@@ -45,7 +53,7 @@ func GT(v interface{}) BuiltInFieldRule {
 	return &thresholdRule{
 		threshold: v,
 		operator:  greaterThan,
-		format:    "%[1]v must be greater than %[2]v",
+		format:    MsgGTFormat,
 	}
 }
 
@@ -54,7 +62,7 @@ func LTE(v interface{}) BuiltInFieldRule {
 	return &thresholdRule{
 		threshold: v,
 		operator:  lessThanEqual,
-		format:    "%[1]v must be less than equal %[2]v",
+		format:    MsgLTEFormat,
 	}
 }
 
@@ -63,11 +71,15 @@ func LT(v interface{}) BuiltInFieldRule {
 	return &thresholdRule{
 		threshold: v,
 		operator:  lessThan,
-		format:    "%[1]v must be less than %[2]v",
+		format:    MsgLTFormat,
 	}
 }
 
-func (r *thresholdRule) ErrorFormat(format string) BuiltInFieldRule {
+func (r *thresholdRule) ErrorFormat() string {
+	return r.format
+}
+
+func (r *thresholdRule) SetErrorFormat(format string) BuiltInFieldRule {
 	return &thresholdRule{
 		threshold: r.threshold,
 		operator:  r.operator,
