@@ -3,6 +3,7 @@ package validation
 import (
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 // Validator validates a struct by specified rules.
@@ -20,13 +21,17 @@ type validatorConfig struct {
 	fieldNameFunc fieldNameFunc
 }
 
-func getFieldName(field *reflect.StructField) string {
+func jsonFieldName(field *reflect.StructField) string {
+	name := field.Tag.Get("json")
+	if name != "" {
+		return strings.SplitN(name, ",", 2)[0]
+	}
 	return field.Name
 }
 
 func defaultConfig() *validatorConfig {
 	return &validatorConfig{
-		fieldNameFunc: getFieldName,
+		fieldNameFunc: jsonFieldName,
 	}
 }
 

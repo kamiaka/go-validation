@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
-	"strings"
 	"testing"
 
 	validation "github.com/kamiaka/go-validation"
@@ -18,20 +16,12 @@ type CreateUserRequest struct {
 	Domains   []string `json:"domains"`
 }
 
-func jsonFieldName(field *reflect.StructField) string {
-	name := field.Tag.Get("json")
-	if name != "" {
-		return strings.SplitN(name, ",", 2)[0]
-	}
-	return field.Name
-}
-
 func TestValidate(t *testing.T) {
 	r := &CreateUserRequest{
 		Password: "ng",
 		Domains:  []string{"", "."},
 	}
-	v, _ := validation.NewValidator(validation.FieldNameFunc(jsonFieldName))
+	v, _ := validation.NewValidator()
 
 	err := v.Validate(
 		r,
