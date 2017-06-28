@@ -9,9 +9,9 @@ type requiredRule struct {
 	format string
 }
 
-func (r *requiredRule) Apply(f FieldInfo) error {
+func (r *requiredRule) Apply(f FieldValue) error {
 	if IsEmpty(f.Value()) {
-		return newFieldError(f, r.format, f.Label())
+		return newError(f, r.format, f.Label())
 	}
 
 	return nil

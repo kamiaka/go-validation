@@ -1,9 +1,11 @@
 package is
 
 import (
+	"regexp"
+	"unicode"
+
 	"github.com/asaskevich/govalidator"
 	"github.com/kamiaka/go-validation"
-	"regexp"
 )
 
 // String rules
@@ -19,7 +21,7 @@ var (
 	// Alpha validates if a string contains English letters only. (a-zA-Z)
 	Alpha = validation.NewStringRule(govalidator.IsAlpha, "%[1]v must contains English letters only")
 	// Digit validates if a string contains digits only. (0-9)
-	Digit = validation.NewStringRule(IsDigit, "%[1]v must contains digits only"), 
+	Digit = validation.NewStringRule(isDigit, "%[1]v must contains digits only")
 	// Alphanumeric validates if a string contains English letters and digits only. (a-zA-Z0-9)
 	Alphanumeric = validation.NewStringRule(govalidator.IsAlphanumeric, "%[1]v must contains English letters and digits only")
 	// UTFLetter validates if a string contains unicode letters only

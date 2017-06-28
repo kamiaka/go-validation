@@ -46,7 +46,7 @@ func StringMaxLength(max int) BuiltInFieldRule {
 	return MaxLength(max).ErrorFormat("%[1]v must be %[2]v character(s) or less")
 }
 
-func (r *lengthRule) Apply(f FieldInfo) error {
+func (r *lengthRule) Apply(f FieldValue) error {
 	if IsEmpty(f.Value()) {
 		return nil
 	}
@@ -57,14 +57,14 @@ func (r *lengthRule) Apply(f FieldInfo) error {
 	}
 	if r.min == nil {
 		if *r.max < size {
-			return newFieldError(f, r.format, f.Label(), *r.max)
+			return newError(f, r.format, f.Label(), *r.max)
 		}
 	} else if r.max == nil {
 		if size < *r.min {
-			return newFieldError(f, r.format, f.Label(), *r.min)
+			return newError(f, r.format, f.Label(), *r.min)
 		}
 	} else if size < *r.min || *r.max < size {
-		return newFieldError(f, r.format, f.Label(), *r.min, *r.max)
+		return newError(f, r.format, f.Label(), *r.min, *r.max)
 	}
 
 	return nil

@@ -5,17 +5,18 @@ import (
 	"reflect"
 )
 
-type fieldNameFunc func(*reflect.StructField) string
-
-type validator struct {
-	config ValidatorConfig
-}
-
+// Validator validates a struct by specified rules.
 type Validator interface {
 	Validate(structPtr interface{}, vs ...StructRule) error
 }
 
-type ValidatorConfig struct {
+type fieldNameFunc func(*reflect.StructField) string
+
+type validator struct {
+	config validatorConfig
+}
+
+type validatorConfig struct {
 	fieldNameFunc fieldNameFunc
 }
 
@@ -23,8 +24,8 @@ func getFieldName(field *reflect.StructField) string {
 	return field.Name
 }
 
-func defaultConfig() *ValidatorConfig {
-	return &ValidatorConfig{
+func defaultConfig() *validatorConfig {
+	return &validatorConfig{
 		fieldNameFunc: getFieldName,
 	}
 }
@@ -52,8 +53,9 @@ func (v *validator) Validate(structPtr interface{}, rules ...StructRule) error {
 	}
 	rv = rv.Elem()
 
-	si := &structInfo{
-		rv: rv,
+	si := &value{
+		rv:     rv,
+		config: &v.config,
 	}
 
 	errs := []Error{}

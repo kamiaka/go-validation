@@ -75,7 +75,7 @@ func (r *thresholdRule) ErrorFormat(format string) BuiltInFieldRule {
 	}
 }
 
-func (r *thresholdRule) Apply(f FieldInfo) error {
+func (r *thresholdRule) Apply(f FieldValue) error {
 	fv := f.Value()
 	if IsEmpty(fv) {
 		return nil
@@ -111,11 +111,7 @@ func (r *thresholdRule) Apply(f FieldInfo) error {
 			return nil
 		}
 	}
-	return &fieldError{
-		field:  f,
-		format: r.format,
-		params: []interface{}{f.Label(), r.threshold},
-	}
+	return newError(f, r.format, f.Label(), r.threshold)
 }
 
 func (r *thresholdRule) compareInt(threshold, value int64) bool {

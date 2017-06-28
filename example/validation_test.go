@@ -7,13 +7,15 @@ import (
 	"testing"
 
 	validation "github.com/kamiaka/go-validation"
+	"github.com/kamiaka/go-validation/is"
 )
 
 type CreateUserRequest struct {
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	UsesMail  *bool  `json:"usesMail"`
-	MailQuota int64  `json:"mailQuota"`
+	Username  string   `json:"username"`
+	Password  string   `json:"password"`
+	UsesMail  *bool    `json:"usesMail"`
+	MailQuota int64    `json:"mailQuota"`
+	Domains   []string `json:"domains"`
 }
 
 func jsonFieldName(field *reflect.StructField) string {
@@ -27,6 +29,7 @@ func jsonFieldName(field *reflect.StructField) string {
 func TestValidate(t *testing.T) {
 	r := &CreateUserRequest{
 		Password: "ng",
+		Domains:  []string{"", "."},
 	}
 	v, _ := validation.NewValidator(validation.FieldNameFunc(jsonFieldName))
 
@@ -35,7 +38,10 @@ func TestValidate(t *testing.T) {
 		validation.Field("username", &r.Username, validation.Required, validation.MaxLength(4)),
 		validation.Field("password", &r.Password, validation.Required, validation.Length(4, 16)),
 		validation.Field("using mail", &r.UsesMail, validation.Required),
-		validation.Field("quota", &r.MailQuota, mustUsesMail, validation.FieldRuleFunc(func(fi validation.FieldInfo, e validation.ErrorFunc) error {
+		validation.Field("ftp users", &r.Domains, validation.Required, validation.MaxLength(2), validation.Repeat(
+			validation.Required.ErrorFormat("value of %[1]v is required"), is.DNSName,
+		)),
+		validation.Field("quota", &r.MailQuota, mustUsesMail, validation.FieldRuleFunc(func(fi validation.FieldValue, e validation.ErrorFunc) error {
 			// set custom rule
 			if fi.IsEmpty() {
 				return nil
@@ -45,7 +51,7 @@ func TestValidate(t *testing.T) {
 			}
 			return nil
 		}), validation.Max(1024)),
-		validation.StructRuleFunc(func(si validation.StructInfo, e validation.ErrorFunc) error {
+		validation.StructRuleFunc(func(v validation.Value, e validation.ErrorFunc) error {
 			// set custom struct level validation.
 			if r.Username == r.Password {
 				e("You are foolish!")
@@ -53,10 +59,20 @@ func TestValidate(t *testing.T) {
 			return nil
 		}),
 	)
-	fmt.Printf("err: %+v\n", err)
+	if err != nil {
+		if errs, ok := err.(validation.Errors); ok {
+			for _, e := range errs {
+				if fe, ok := e.(validation.Error); ok {
+					fmt.Printf("%s: %#v\n", fe.Value().Namespace(), fe.Error())
+				} else {
+					fmt.Printf("struct: %#v\n", e.Error())
+				}
+			}
+		}
+	}
 }
 
-var mustUsesMail validation.FieldRuleFunc = func(fi validation.FieldInfo, e validation.ErrorFunc) error {
+var mustUsesMail validation.FieldRuleFunc = func(fi validation.FieldValue, e validation.ErrorFunc) error {
 	if validation.IsEmpty(fi.Value()) {
 		return nil
 	}

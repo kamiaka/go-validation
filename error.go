@@ -29,79 +29,39 @@ type Error interface {
 
 	// Params returns validation params for error message.
 	Params() []interface{}
+
+	// Value returns field/struct level Value.
+	Value() Value
 }
 
-// FieldError is field error interface. that implements `Error`
-type FieldError interface {
-	Error
-	Field() FieldInfo
-}
-
-type fieldError struct {
-	field  FieldInfo
+type err struct {
+	value  Value
 	format string
 	params []interface{}
 }
 
-func (e *fieldError) Error() string {
-	return fmt.Sprintf(e.format, e.params...)
-}
-
-func (e *fieldError) ErrorFormat() string {
-	return e.format
-}
-
-func (e *fieldError) Params() []interface{} {
-	return e.params
-}
-
-func (e *fieldError) Field() FieldInfo {
-	return e.field
-}
-
-func newFieldError(fi FieldInfo, format string, params ...interface{}) Errors {
+func newError(v Value, format string, params ...interface{}) Errors {
 	return Errors{
-		&fieldError{
-			field:  fi,
+		&err{
+			value:  v,
 			format: format,
 			params: params,
 		},
 	}
 }
 
-type StructError interface {
-	Error
-	Struct() StructInfo
-}
-
-type structError struct {
-	si     StructInfo
-	format string
-	params []interface{}
-}
-
-func newStructError(si StructInfo, format string, params ...interface{}) Errors {
-	return Errors{
-		&structError{
-			si:     si,
-			format: format,
-			params: params,
-		},
-	}
-}
-
-func (e *structError) Error() string {
+func (e *err) Error() string {
 	return fmt.Sprintf(e.format, e.params...)
 }
 
-func (e *structError) ErrorFormat() string {
+func (e *err) ErrorFormat() string {
 	return e.format
 }
 
-func (e *structError) Params() []interface{} {
+func (e *err) Params() []interface{} {
 	return e.params
 }
 
-func (e *structError) Struct() StructInfo {
-	return e.si
+func (e *err) Value() Value {
+	return e.value
 }

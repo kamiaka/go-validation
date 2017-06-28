@@ -33,39 +33,49 @@ func findStructField(structValue reflect.Value, fieldValue reflect.Value) *refle
 	return nil
 }
 
-func (v *fieldValidator) Apply(si StructInfo) error {
+func (v *fieldValidator) Apply(parent Value) error {
 	fv := reflect.ValueOf(v.fieldPtr)
 	if fv.Kind() != reflect.Ptr {
 		return fmt.Errorf("Field %s is not specified as a pointer.", v.label)
 	}
 
-	sf := findStructField(si.Value(), fv)
+	sf := findStructField(parent.Value(), fv)
 	if sf == nil {
 		return fmt.Errorf("Cannot find struct field for %s", v.label)
 	}
 
-	field := &fieldInfo{
-		label: v.label,
-		sf:    sf,
-		rv:    fv.Elem(),
-		si:    si,
+	p, ok := parent.(*value)
+	if !ok {
+		return fmt.Errorf("cannot convert %v to *value", parent.Value().Type())
 	}
-	var errs Errors
+
+	field := &value{
+		label:  v.label,
+		sf:     sf,
+		rv:     fv.Elem(),
+		parent: parent,
+		config: p.config,
+	}
+	//var errs Errors
 	for _, rule := range v.rules {
 		err := rule.Apply(field)
 		if err == nil {
 			continue
 		}
 		if e, ok := err.(Errors); ok {
-			errs = append(errs, e...)
-			continue
+			return e
+			/*
+				fmt.Printf("%s: %s\n", e[0].Value().Namespace(), e[0].Error())
+				errs = append(errs, e...)
+				continue
+				//*/
 		}
 		return err
 	}
-
-	if len(errs) == 0 {
-		return nil
-	}
-
-	return errs
+	/*
+		if len(errs) == 0 {
+			return nil
+		}
+	//*/
+	return nil
 }

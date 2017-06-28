@@ -1,16 +1,14 @@
 package validation
 
-type stringValidator func(string) bool
-
 type stringRule struct {
-	validate stringValidator
+	validate func(string) bool
 	format   string
 }
 
-func NewStringRule(validator stringValidator) BuiltInFieldRule {
+func NewStringRule(validator func(string) bool, format string) BuiltInFieldRule {
 	return &stringRule{
 		validate: validator,
-		format:   "%[1]v is not match rule.",
+		format:   format,
 	}
 }
 
@@ -21,7 +19,7 @@ func (r *stringRule) ErrorFormat(format string) BuiltInFieldRule {
 	}
 }
 
-func (r *stringRule) Apply(fi FieldInfo) error {
+func (r *stringRule) Apply(fi FieldValue) error {
 	if fi.IsEmpty() {
 		return nil
 	}
@@ -32,7 +30,7 @@ func (r *stringRule) Apply(fi FieldInfo) error {
 	}
 
 	if !r.validate(str) {
-		return newFieldError(fi, r.format, fi.Label())
+		return newError(fi, r.format, fi.Label())
 	}
 
 	return nil

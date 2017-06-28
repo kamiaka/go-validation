@@ -36,6 +36,8 @@ func IsEmpty(rv reflect.Value) bool {
 	switch rv.Kind() {
 	case reflect.Invalid:
 		return true
+	case reflect.String, reflect.Array, reflect.Map, reflect.Slice:
+		return rv.Len() == 0
 	case reflect.Bool:
 		return !rv.Bool()
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
@@ -44,8 +46,6 @@ func IsEmpty(rv reflect.Value) bool {
 		return rv.Uint() == 0
 	case reflect.Float32, reflect.Float64:
 		return rv.Float() == 0
-	case reflect.String:
-		return rv.String() == ""
 	case reflect.Ptr:
 		return rv.IsNil()
 	case reflect.Interface:

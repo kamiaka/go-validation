@@ -24,7 +24,7 @@ func (r *matchRule) ErrorFormat(format string) BuiltInFieldRule {
 	}
 }
 
-func (r *matchRule) Apply(fi FieldInfo) error {
+func (r *matchRule) Apply(fi FieldValue) error {
 	if fi.IsEmpty() {
 		return nil
 	}
@@ -42,5 +42,5 @@ func (r *matchRule) Apply(fi FieldInfo) error {
 		return fmt.Errorf("cannot convert %v to string or bytes", fi.Value().Type())
 	}
 
-	return newFieldError(fi, r.format, fi.Label())
+	return newError(fi, r.format, fi.Label())
 }
