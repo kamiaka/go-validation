@@ -1,12 +1,13 @@
 package validation
 
+// Error message formats.
 const (
-	MsgInvalidLength = "%[1]v must between %[2]v and %[3]v"
-	MsgMinLength = "%[1]v must be %[2]v or more"
-	MsgMaxLength = "%[1]v must be %[2]v or less"
-	MsgStringLength = "%[1]v must between %[2]v and %[3]v character(s)"
-	MsgStringMinLength = "%[1]v must be %[2]v character(s) or more"
-	MsgStringMaxLength = "%[1]v must be %[2]v character(s) or less"
+	MsgInvalidLengthFormat   = "%[1]v must between %[2]v and %[3]v"
+	MsgMinLengthFormat       = "%[1]v must be %[2]v or more"
+	MsgMaxLengthFormat       = "%[1]v must be %[2]v or less"
+	MsgStringLengthFormat    = "%[1]v must between %[2]v and %[3]v character(s)"
+	MsgStringMinLengthFormat = "%[1]v must be %[2]v character(s) or more"
+	MsgStringMaxLengthFormat = "%[1]v must be %[2]v character(s) or less"
 )
 
 type lengthRule struct {
@@ -20,7 +21,7 @@ func Length(min int, max int) BuiltInFieldRule {
 	return &lengthRule{
 		min:    &min,
 		max:    &max,
-		format: MsgInvalidLength,
+		format: MsgInvalidLengthFormat,
 	}
 }
 
@@ -28,7 +29,7 @@ func Length(min int, max int) BuiltInFieldRule {
 func MinLength(min int) BuiltInFieldRule {
 	return &lengthRule{
 		min:    &min,
-		format: MsgMinLength,
+		format: MsgMinLengthFormat,
 	}
 }
 
@@ -36,23 +37,23 @@ func MinLength(min int) BuiltInFieldRule {
 func MaxLength(max int) BuiltInFieldRule {
 	return &lengthRule{
 		max:    &max,
-		format: MsgMaxLength,
+		format: MsgMaxLengthFormat,
 	}
 }
 
 // StringLength returns a validation rule that checks if a string length is within the specified range.
 func StringLength(min int, max int) BuiltInFieldRule {
-	return Length(min, max).SetErrorFormat(MsgStringLength)
+	return Length(min, max).SetErrorFormat(MsgStringLengthFormat)
 }
 
 // StringMinLength returns a validation rule that checks if a string length is within the specified range.
 func StringMinLength(min int) BuiltInFieldRule {
-	return MinLength(min).SetErrorFormat(MsgStringMinLength)
+	return MinLength(min).SetErrorFormat(MsgStringMinLengthFormat)
 }
 
 // StringMaxLength returns a validation rule that checks if a string length is within the specified range.
 func StringMaxLength(max int) BuiltInFieldRule {
-	return MaxLength(max).SetErrorFormat(MsgStringMaxLength)
+	return MaxLength(max).SetErrorFormat(MsgStringMaxLengthFormat)
 }
 
 func (r *lengthRule) Apply(f FieldValue) error {
