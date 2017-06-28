@@ -12,7 +12,11 @@ func NewStringRule(validator func(string) bool, format string) BuiltInFieldRule 
 	}
 }
 
-func (r *stringRule) ErrorFormat(format string) BuiltInFieldRule {
+func (r *stringRule) ErrorFormat() string {
+	return r.format
+}
+
+func (r *stringRule) SetErrorFormat(format string) BuiltInFieldRule {
 	return &stringRule{
 		validate: r.validate,
 		format:   format,

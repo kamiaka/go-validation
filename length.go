@@ -70,7 +70,11 @@ func (r *lengthRule) Apply(f FieldValue) error {
 	return nil
 }
 
-func (r *lengthRule) ErrorFormat(format string) BuiltInFieldRule {
+func (r *lengthRule) ErrorFormat() string {
+	return r.format
+}
+
+func (r *lengthRule) SetErrorFormat(format string) BuiltInFieldRule {
 	return &lengthRule{
 		min:    r.min,
 		max:    r.max,

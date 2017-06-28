@@ -17,7 +17,11 @@ func (r *requiredRule) Apply(f FieldValue) error {
 	return nil
 }
 
-func (r *requiredRule) ErrorFormat(format string) BuiltInFieldRule {
+func (r *requiredRule) ErrorFormat() string {
+	return r.format
+}
+
+func (r *requiredRule) SetErrorFormat(format string) BuiltInFieldRule {
 	return &requiredRule{
 		format: format,
 	}

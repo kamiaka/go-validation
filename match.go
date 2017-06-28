@@ -17,7 +17,11 @@ func Match(re *regexp.Regexp) BuiltInFieldRule {
 	}
 }
 
-func (r *matchRule) ErrorFormat(format string) BuiltInFieldRule {
+func (r *matchRule) ErrorFormat() string {
+	return r.format
+}
+
+func (r *matchRule) SetErrorFormat(format string) BuiltInFieldRule {
 	return &matchRule{
 		re:     r.re,
 		format: format,

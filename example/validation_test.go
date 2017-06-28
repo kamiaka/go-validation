@@ -39,7 +39,7 @@ func TestValidate(t *testing.T) {
 		validation.Field("password", &r.Password, validation.Required, validation.Length(4, 16)),
 		validation.Field("using mail", &r.UsesMail, validation.Required),
 		validation.Field("ftp users", &r.Domains, validation.Required, validation.MaxLength(2), validation.Repeat(
-			validation.Required.ErrorFormat("value of %[1]v is required"), is.DNSName,
+			validation.Required.SetErrorFormat("value of %[1]v is required"), is.DNSName,
 		)),
 		validation.Field("quota", &r.MailQuota, mustUsesMail, validation.FieldRuleFunc(func(fi validation.FieldValue, e validation.ErrorFunc) error {
 			// set custom rule
