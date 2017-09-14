@@ -18,8 +18,9 @@ type CreateUserRequest struct {
 
 func TestValidate(t *testing.T) {
 	r := &CreateUserRequest{
-		Password: "ng",
-		Domains:  []string{"", "."},
+		Password:  "ng",
+		Domains:   []string{"", "."},
+		MailQuota: 200,
 	}
 	v, _ := validation.NewValidator()
 
@@ -37,14 +38,14 @@ func TestValidate(t *testing.T) {
 				return nil
 			}
 			if r.UsesMail == nil || *r.UsesMail != true {
-				e("Setting %[1]v requires %[2]v as truthy", fi.Label(), "using mail")
+				return e("Setting %[1]v requires %[2]v as truthy", fi.Label(), "using mail")
 			}
 			return nil
 		}), validation.Max(1024)),
 		validation.StructRuleFunc(func(v validation.Value, e validation.ErrorFunc) error {
 			// set custom struct level validation.
 			if r.Username == r.Password {
-				e("You are foolish!")
+				return e("You are foolish!")
 			}
 			return nil
 		}),
