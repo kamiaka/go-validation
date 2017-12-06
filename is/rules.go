@@ -1,7 +1,9 @@
 package is
 
 import (
+	"net"
 	"regexp"
+	"strings"
 	"unicode"
 
 	"github.com/asaskevich/govalidator"
@@ -94,6 +96,12 @@ var (
 	IPv4 = validation.NewStringRule(govalidator.IsIPv4, "%[1]v must be a valid IPv4 address")
 	// IPv6 validates if a string is a valid version 6 IP address
 	IPv6 = validation.NewStringRule(govalidator.IsIPv6, "%[1]v must be a valid IPv6 address")
+	// CIDR validates if as string is a valid CIDR
+	CIDR = validation.NewStringRule(isCIDR, "%[1]v must be a valid CIDR")
+	// IPv4CIDR validates if as string is a valid version 4 IP address's CIDR
+	IPv4CIDR = validation.NewStringRule(isIPv4CIDR, "%[1]v must be a valid IPv4 CIDR")
+	// IPv6CIDR validates if as string is a valid version 6 IP address's CIDR
+	IPv6CIDR = validation.NewStringRule(isIPv6CIDR, "%[1]v must be a valid IPv6 CIDR")
 	// DNSName validates if a string is valid DNS name
 	DNSName = validation.NewStringRule(govalidator.IsDNSName, "%[1]v must be a valid DNS name")
 	// Host validates if a string is a valid IP (both v4 and v6) or a valid DNS name
@@ -132,4 +140,23 @@ func isUTFNumeric(value string) bool {
 		}
 	}
 	return true
+}
+
+func isCIDR(s string) bool {
+	_, _, err := net.ParseCIDR(s)
+	return err != nil
+}
+
+func isIPv4CIDR(s string) bool {
+	if !isCIDR(s) {
+		return false
+	}
+	return strings.ContainsRune(s, '.')
+}
+
+func isIPv6CIDR(s string) bool {
+	if !isCIDR(s) {
+		return false
+	}
+	return strings.ContainsRune(s, ':')
 }

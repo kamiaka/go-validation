@@ -14,6 +14,7 @@ type CreateUserRequest struct {
 	UsesMail  *bool    `json:"usesMail"`
 	MailQuota int64    `json:"mailQuota"`
 	Domains   []string `json:"domains"`
+	Type      int      `json::"type"`
 }
 
 func TestValidate(t *testing.T) {
@@ -21,6 +22,7 @@ func TestValidate(t *testing.T) {
 		Password:  "ng",
 		Domains:   []string{"", "."},
 		MailQuota: 200,
+		Type:      42,
 	}
 	v, _ := validation.NewValidator()
 
@@ -42,6 +44,7 @@ func TestValidate(t *testing.T) {
 			}
 			return nil
 		}), validation.Max(1024)),
+		validation.Field("type", &r.Type, validation.In("ok", "foo", 42)),
 		validation.StructRuleFunc(func(v validation.Value, e validation.ErrorFunc) error {
 			// set custom struct level validation.
 			if r.Username == r.Password {
