@@ -64,18 +64,8 @@ func (v *fieldValidator) Apply(parent Value) error {
 		}
 		if e, ok := err.(Errors); ok {
 			return e
-			/*
-				fmt.Printf("%s: %s\n", e[0].Value().Namespace(), e[0].Error())
-				errs = append(errs, e...)
-				continue
-				//*/
 		}
 		return err
 	}
-	/*
-		if len(errs) == 0 {
-			return nil
-		}
-	//*/
 	return nil
 }

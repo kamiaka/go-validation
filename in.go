@@ -14,6 +14,7 @@ type inRule struct {
 	format string
 }
 
+// In values rule.
 func In(values ...interface{}) BuiltInFieldRule {
 	return &inRule{
 		values: values,

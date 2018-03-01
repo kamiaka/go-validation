@@ -5,6 +5,7 @@ import (
 	"reflect"
 )
 
+// Value ...
 type Value interface {
 	Value() reflect.Value
 	Interface() interface{}
@@ -13,6 +14,7 @@ type Value interface {
 	Namespace() string
 }
 
+// FieldValue ...
 type FieldValue interface {
 	Value
 	Label() string

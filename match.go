@@ -15,6 +15,7 @@ type matchRule struct {
 	format string
 }
 
+// Match regular expressions
 func Match(re *regexp.Regexp) BuiltInFieldRule {
 	return &matchRule{
 		re:     re,

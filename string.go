@@ -5,6 +5,7 @@ type stringRule struct {
 	format   string
 }
 
+// NewStringRule ...
 func NewStringRule(validator func(string) bool, format string) BuiltInFieldRule {
 	return &stringRule{
 		validate: validator,

@@ -9,6 +9,7 @@ type arrayValidator struct {
 	rules []FieldRule
 }
 
+// Repeat deep slices and apply rules.
 func Repeat(rules ...FieldRule) FieldRule {
 	return &arrayValidator{
 		rules: rules,
