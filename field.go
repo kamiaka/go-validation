@@ -21,6 +21,9 @@ func Field(label string, fieldPtr interface{}, rules ...FieldRule) StructRule {
 }
 
 func findStructField(structValue reflect.Value, fieldValue reflect.Value) *reflect.StructField {
+	if structValue.Kind() == reflect.Ptr {
+		structValue = structValue.Elem()
+	}
 	ptr := fieldValue.Pointer()
 	for i := structValue.NumField() - 1; i >= 0; i-- {
 		sf := structValue.Type().Field(i)

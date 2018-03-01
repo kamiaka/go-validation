@@ -38,7 +38,12 @@ func (v *value) Name() string {
 	if v.parent == nil {
 		return ""
 	}
-	if v.parent.Value().Kind() == reflect.Struct {
+	pv := v.parent.Value()
+	if pv.Kind() == reflect.Ptr {
+		pv = pv.Elem()
+	}
+
+	if pv.Kind() == reflect.Struct {
 		return v.config.fieldNameFunc(v.sf)
 	}
 	return v.parent.Name()
@@ -50,7 +55,12 @@ func (v *value) Namespace() string {
 	}
 	ns := v.parent.Namespace()
 
-	switch v.parent.Value().Kind() {
+	pv := v.parent.Value()
+	if pv.Kind() == reflect.Ptr {
+		pv = pv.Elem()
+	}
+
+	switch pv.Kind() {
 	case reflect.Struct:
 		if ns == "" {
 			return v.Name()
