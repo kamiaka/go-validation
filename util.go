@@ -71,7 +71,7 @@ func ToFloat(v reflect.Value) (float64, error) {
 	case reflect.Float32, reflect.Float64:
 		return v.Float(), nil
 	}
-	return 0, fmt.Errorf("Cannot convert %v to float64.", v.Kind().String())
+	return 0, fmt.Errorf("cannot convert %v to float64", v.Kind().String())
 }
 
 func ToInt(v reflect.Value) (int64, error) {
@@ -79,7 +79,7 @@ func ToInt(v reflect.Value) (int64, error) {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return v.Int(), nil
 	}
-	return 0, fmt.Errorf("Cannot convert %v to int64.", v.Kind().String())
+	return 0, fmt.Errorf("cannot convert %v to int64", v.Kind().String())
 }
 
 func ToUint(v reflect.Value) (uint64, error) {
@@ -87,5 +87,5 @@ func ToUint(v reflect.Value) (uint64, error) {
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		return v.Uint(), nil
 	}
-	return 0, fmt.Errorf("Cannot convert %v to uint64.", v.Kind().String())
+	return 0, fmt.Errorf("cannot convert %v to uint64", v.Kind().String())
 }

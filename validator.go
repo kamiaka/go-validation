@@ -54,7 +54,7 @@ func NewValidator(opts ...ValidatorOption) (Validator, error) {
 func (v *validator) Validate(structPtr interface{}, rules ...StructRule) error {
 	rv := reflect.ValueOf(structPtr)
 	if rv.Kind() != reflect.Ptr {
-		return fmt.Errorf("Only a pointer to struct can be validated.")
+		return fmt.Errorf("Only a pointer to struct can be validated")
 	}
 	rv = rv.Elem()
 

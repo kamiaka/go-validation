@@ -36,12 +36,12 @@ func findStructField(structValue reflect.Value, fieldValue reflect.Value) *refle
 func (v *fieldValidator) Apply(parent Value) error {
 	fv := reflect.ValueOf(v.fieldPtr)
 	if fv.Kind() != reflect.Ptr {
-		return fmt.Errorf("Field %s is not specified as a pointer.", v.label)
+		return fmt.Errorf("field %s is not specified as a pointer", v.label)
 	}
 
 	sf := findStructField(parent.Value(), fv)
 	if sf == nil {
-		return fmt.Errorf("Cannot find struct field for %s", v.label)
+		return fmt.Errorf("cannot find struct field for %s", v.label)
 	}
 
 	p, ok := parent.(*value)
