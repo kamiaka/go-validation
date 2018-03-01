@@ -40,6 +40,6 @@ type StructRuleFunc func(Value, ErrorFunc) error
 // Apply calls apply(Value, ErrorFunc)
 func (apply StructRuleFunc) Apply(v Value) error {
 	return apply(v, func(message string, params ...interface{}) error {
-		return newError(v, message, params)
+		return newError(v, message, params...)
 	})
 }
