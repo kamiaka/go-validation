@@ -7,15 +7,25 @@ const (
 
 // Required is validation rule that checks value is not empty.
 var Required = &requiredRule{
-	format: MsgRequiredFormat,
+	isEnabled: true,
+	format:    MsgRequiredFormat,
 }
 
 type requiredRule struct {
-	format string
+	isEnabled bool
+	format    string
+}
+
+// RequiredWhen rules requires when args is true.
+func RequiredWhen(b bool) BuiltInFieldRule {
+	return &requiredRule{
+		isEnabled: b,
+		format:    MsgRequiredFormat,
+	}
 }
 
 func (r *requiredRule) Apply(f FieldValue) error {
-	if IsEmpty(f.Value()) {
+	if r.isEnabled && IsEmpty(f.Value()) {
 		return newError(f, r.format, f.Label())
 	}
 
