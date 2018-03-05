@@ -144,7 +144,7 @@ func isUTFNumeric(value string) bool {
 
 func isCIDR(s string) bool {
 	_, _, err := net.ParseCIDR(s)
-	return err != nil
+	return err == nil
 }
 
 func isIPv4CIDR(s string) bool {
