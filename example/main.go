@@ -23,7 +23,7 @@ type mail struct {
 func main() {
 	// print "ok"
 	validateAndPrintError(&request{
-		Username: "john",
+		Username: "太郎",
 		Password: "abcdefg",
 		Domains:  []string{"example.com"},
 		Type:     42,
@@ -31,7 +31,7 @@ func main() {
 
 	// print `
 	// 	password: password must between 4 and 16
-	// 	mail.isEnabled: using mail is requried
+	// 	mail.isEnabled: using mail is required
 	// 	mail.quota: setting quota requires using mail
 	// 	domains[0]: value of my domains is required
 	// 	domains[1]: my domains must be a valid DNS name
@@ -39,7 +39,7 @@ func main() {
 	// 	: You are foolish!
 	// `
 	validateAndPrintError(&request{
-		Username: "ng",
+		Username: "invalid",
 		Password: "ng",
 		Domains:  []string{"", "."},
 		Mail: &mail{
@@ -53,7 +53,7 @@ func validateAndPrintError(r *request) {
 	v, _ := validation.NewValidator()
 	err := v.Validate(
 		r,
-		validation.Field("username", &r.Username, validation.Required, validation.MaxLength(4)),
+		validation.Field("username", &r.Username, validation.Required, validation.StringMaxLength(4)),
 		validation.Field("password", &r.Password, validation.Required, validation.Length(4, 16)),
 		validation.Field("mail", &r.Mail, validation.DeepStructRuleFunc(func(v validation.FieldValue) (rules []validation.StructRule, err error) {
 			p := v.Interface().(*mail)

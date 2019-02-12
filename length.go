@@ -1,5 +1,10 @@
 package validation
 
+import (
+	"reflect"
+	"unicode/utf8"
+)
+
 // Error message formats.
 const (
 	MsgInvalidLengthFormat   = "%[1]v must between %[2]v and %[3]v"
@@ -14,6 +19,7 @@ type lengthRule struct {
 	*rule
 	min    *int
 	max    *int
+	length func(reflect.Value) (int, error)
 }
 
 func newLengthRule(format string, min, max *int) BuiltInFieldRule {
@@ -21,6 +27,7 @@ func newLengthRule(format string, min, max *int) BuiltInFieldRule {
 		rule:   newRule(format),
 		min:    min,
 		max:    max,
+		length: LengthOfValue,
 	}
 }
 
@@ -48,6 +55,7 @@ func newStrLengthRule(format string, min, max *int) BuiltInFieldRule {
 		rule:   newRule(format),
 		min:    min,
 		max:    max,
+		length: reflectStrLength,
 	}
 }
 
@@ -71,7 +79,7 @@ func (r *lengthRule) Apply(f FieldValue) error {
 		return nil
 	}
 
-	size, err := LengthOfValue(f.Value())
+	size, err := r.length(f.Value())
 	if err != nil {
 		return err
 	}
