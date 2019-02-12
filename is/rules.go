@@ -7,7 +7,7 @@ import (
 	"unicode"
 
 	"github.com/asaskevich/govalidator"
-	"github.com/kamiaka/go-validation"
+	validation "github.com/kamiaka/go-validation"
 )
 
 // String rules
