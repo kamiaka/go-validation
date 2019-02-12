@@ -10,27 +10,26 @@ const (
 )
 
 type inRule struct {
+	*rule
 	values []interface{}
-	format string
 }
 
 // In values rule.
 func In(values ...interface{}) BuiltInFieldRule {
 	return &inRule{
+		rule:   newRule(MsgInFormat),
 		values: values,
-		format: MsgInFormat,
 	}
 }
 
-func (r *inRule) ErrorFormat() string {
-	return r.format
+func (r *inRule) SetErrorFormat(f string) BuiltInFieldRule {
+	r.rule.format = f
+	return r
 }
 
-func (r *inRule) SetErrorFormat(format string) BuiltInFieldRule {
-	return &inRule{
-		values: r.values,
-		format: format,
-	}
+func (r *inRule) SetParamsMap(f MapParamsFunc) BuiltInFieldRule {
+	r.rule.mapParams = f
+	return r
 }
 
 func (r *inRule) Apply(f FieldValue) error {
@@ -48,5 +47,5 @@ func (r *inRule) Apply(f FieldValue) error {
 			return nil
 		}
 	}
-	return newError(f, r.format, f.Label())
+	return r.newError(f, f.Label())
 }

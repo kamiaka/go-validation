@@ -11,27 +11,26 @@ const (
 )
 
 type matchRule struct {
-	re     *regexp.Regexp
-	format string
+	*rule
+	re *regexp.Regexp
 }
 
 // Match regular expressions
 func Match(re *regexp.Regexp) BuiltInFieldRule {
 	return &matchRule{
-		re:     re,
-		format: MsgMatchFormat,
+		rule: newRule(MsgMatchFormat),
+		re:   re,
 	}
 }
 
-func (r *matchRule) ErrorFormat() string {
-	return r.format
+func (r *matchRule) SetErrorFormat(f string) BuiltInFieldRule {
+	r.rule.format = f
+	return r
 }
 
-func (r *matchRule) SetErrorFormat(format string) BuiltInFieldRule {
-	return &matchRule{
-		re:     r.re,
-		format: format,
-	}
+func (r *matchRule) SetParamsMap(f MapParamsFunc) BuiltInFieldRule {
+	r.rule.mapParams = f
+	return r
 }
 
 func (r *matchRule) Apply(fi FieldValue) error {
@@ -52,5 +51,5 @@ func (r *matchRule) Apply(fi FieldValue) error {
 		return fmt.Errorf("cannot convert %v to string or bytes", fi.Value().Type())
 	}
 
-	return newError(fi, r.format, fi.Label())
+	return r.newError(fi, fi.Label())
 }

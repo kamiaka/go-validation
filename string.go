@@ -1,27 +1,26 @@
 package validation
 
 type stringRule struct {
+	*rule
 	validate func(string) bool
-	format   string
 }
 
 // NewStringRule ...
 func NewStringRule(validator func(string) bool, format string) BuiltInFieldRule {
 	return &stringRule{
+		rule:     newRule(format),
 		validate: validator,
-		format:   format,
 	}
 }
 
-func (r *stringRule) ErrorFormat() string {
-	return r.format
+func (r *stringRule) SetErrorFormat(f string) BuiltInFieldRule {
+	r.rule.format = f
+	return r
 }
 
-func (r *stringRule) SetErrorFormat(format string) BuiltInFieldRule {
-	return &stringRule{
-		validate: r.validate,
-		format:   format,
-	}
+func (r *stringRule) SetParamsMap(f MapParamsFunc) BuiltInFieldRule {
+	r.rule.mapParams = f
+	return r
 }
 
 func (r *stringRule) Apply(fi FieldValue) error {
@@ -35,7 +34,7 @@ func (r *stringRule) Apply(fi FieldValue) error {
 	}
 
 	if !r.validate(str) {
-		return newError(fi, r.format, fi.Label())
+		return r.newError(fi, fi.Label())
 	}
 
 	return nil

@@ -11,49 +11,59 @@ const (
 )
 
 type lengthRule struct {
+	*rule
 	min    *int
 	max    *int
-	format string
+}
+
+func newLengthRule(format string, min, max *int) BuiltInFieldRule {
+	return &lengthRule{
+		rule:   newRule(format),
+		min:    min,
+		max:    max,
+	}
 }
 
 // Length returns a validation rule that checks if a value's length is within the specified range.
 func Length(min int, max int) BuiltInFieldRule {
-	return &lengthRule{
-		min:    &min,
-		max:    &max,
-		format: MsgInvalidLengthFormat,
-	}
+	return newLengthRule(MsgInvalidLengthFormat, &min, &max)
 }
 
 // MinLength returns a validation rule that checks if a value's length is greater or equal than specified value.
 func MinLength(min int) BuiltInFieldRule {
-	return &lengthRule{
-		min:    &min,
-		format: MsgMinLengthFormat,
-	}
+	return newLengthRule(MsgMinLengthFormat, &min, nil)
 }
 
 // MaxLength returns a validation rule that checks if a value's length is less or equal than specified value
 func MaxLength(max int) BuiltInFieldRule {
+	return newLengthRule(MsgMaxLengthFormat, nil, &max)
+}
+
+func reflectStrLength(v reflect.Value) (int, error) {
+	return utf8.RuneCountInString(v.String()), nil
+}
+
+func newStrLengthRule(format string, min, max *int) BuiltInFieldRule {
 	return &lengthRule{
-		max:    &max,
-		format: MsgMaxLengthFormat,
+		rule:   newRule(format),
+		min:    min,
+		max:    max,
 	}
 }
 
 // StringLength returns a validation rule that checks if a string length is within the specified range.
 func StringLength(min int, max int) BuiltInFieldRule {
-	return Length(min, max).SetErrorFormat(MsgStringLengthFormat)
+	return newStrLengthRule(MsgStringLengthFormat, &min, &max)
 }
 
 // StringMinLength returns a validation rule that checks if a string length is within the specified range.
 func StringMinLength(min int) BuiltInFieldRule {
-	return MinLength(min).SetErrorFormat(MsgStringMinLengthFormat)
+	return newStrLengthRule(MsgStringMinLengthFormat, &min, nil)
 }
 
 // StringMaxLength returns a validation rule that checks if a string length is within the specified range.
 func StringMaxLength(max int) BuiltInFieldRule {
-	return MaxLength(max).SetErrorFormat(MsgStringMaxLengthFormat)
+	return newStrLengthRule(MsgStringMaxLengthFormat, nil, &max)
 }
 
 func (r *lengthRule) Apply(f FieldValue) error {
@@ -67,27 +77,25 @@ func (r *lengthRule) Apply(f FieldValue) error {
 	}
 	if r.min == nil {
 		if *r.max < size {
-			return newError(f, r.format, f.Label(), *r.max)
+			return r.newError(f, f.Label(), *r.max)
 		}
 	} else if r.max == nil {
 		if size < *r.min {
-			return newError(f, r.format, f.Label(), *r.min)
+			return r.newError(f, f.Label(), *r.min)
 		}
 	} else if size < *r.min || *r.max < size {
-		return newError(f, r.format, f.Label(), *r.min, *r.max)
+		return r.newError(f, f.Label(), *r.min, *r.max)
 	}
 
 	return nil
 }
 
-func (r *lengthRule) ErrorFormat() string {
-	return r.format
+func (r *lengthRule) SetErrorFormat(f string) BuiltInFieldRule {
+	r.rule.format = f
+	return r
 }
 
-func (r *lengthRule) SetErrorFormat(format string) BuiltInFieldRule {
-	return &lengthRule{
-		min:    r.min,
-		max:    r.max,
-		format: format,
-	}
+func (r *lengthRule) SetParamsMap(f MapParamsFunc) BuiltInFieldRule {
+	r.rule.mapParams = f
+	return r
 }

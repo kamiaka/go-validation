@@ -22,9 +22,9 @@ const (
 )
 
 type thresholdRule struct {
+	*rule
 	threshold interface{}
 	operator  int
-	format    string
 }
 
 // Min returns validation rule that checks if a value is greater or equal than specified value.
@@ -44,7 +44,7 @@ func GTE(v interface{}) BuiltInFieldRule {
 	return &thresholdRule{
 		threshold: v,
 		operator:  greaterThanEqual,
-		format:    MsgGTEFormat,
+		rule:      newRule(MsgGTEFormat),
 	}
 }
 
@@ -53,7 +53,7 @@ func GT(v interface{}) BuiltInFieldRule {
 	return &thresholdRule{
 		threshold: v,
 		operator:  greaterThan,
-		format:    MsgGTFormat,
+		rule:      newRule(MsgGTFormat),
 	}
 }
 
@@ -62,7 +62,7 @@ func LTE(v interface{}) BuiltInFieldRule {
 	return &thresholdRule{
 		threshold: v,
 		operator:  lessThanEqual,
-		format:    MsgLTEFormat,
+		rule:      newRule(MsgLTEFormat),
 	}
 }
 
@@ -71,20 +71,18 @@ func LT(v interface{}) BuiltInFieldRule {
 	return &thresholdRule{
 		threshold: v,
 		operator:  lessThan,
-		format:    MsgLTFormat,
+		rule:      newRule(MsgLTFormat),
 	}
 }
 
-func (r *thresholdRule) ErrorFormat() string {
-	return r.format
+func (r *thresholdRule) SetErrorFormat(f string) BuiltInFieldRule {
+	r.rule.format = f
+	return r
 }
 
-func (r *thresholdRule) SetErrorFormat(format string) BuiltInFieldRule {
-	return &thresholdRule{
-		threshold: r.threshold,
-		operator:  r.operator,
-		format:    format,
-	}
+func (r *thresholdRule) SetParamsMap(f MapParamsFunc) BuiltInFieldRule {
+	r.rule.mapParams = f
+	return r
 }
 
 func (r *thresholdRule) Apply(f FieldValue) error {
@@ -123,7 +121,7 @@ func (r *thresholdRule) Apply(f FieldValue) error {
 			return nil
 		}
 	}
-	return newError(f, r.format, f.Label(), r.threshold)
+	return r.newError(f, f.Label(), r.threshold)
 }
 
 func (r *thresholdRule) compareInt(threshold, value int64) bool {

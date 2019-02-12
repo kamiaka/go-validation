@@ -2,42 +2,42 @@ package validation
 
 // Required message format
 const (
-	MsgRequiredFormat = "%[1]s is requried"
+	MsgRequiredFormat = "%[1]s is required"
 )
 
 // Required is validation rule that checks value is not empty.
 var Required = &requiredRule{
+	rule:      newRule(MsgRequiredFormat),
 	isEnabled: true,
-	format:    MsgRequiredFormat,
 }
 
 type requiredRule struct {
+	*rule
 	isEnabled bool
-	format    string
 }
 
 // RequiredWhen rules requires when args is true.
 func RequiredWhen(b bool) BuiltInFieldRule {
 	return &requiredRule{
+		rule:      newRule(MsgRequiredFormat),
 		isEnabled: b,
-		format:    MsgRequiredFormat,
 	}
 }
 
 func (r *requiredRule) Apply(f FieldValue) error {
 	if r.isEnabled && IsEmpty(f.Value()) {
-		return newError(f, r.format, f.Label())
+		return r.newError(f, f.Label())
 	}
 
 	return nil
 }
 
-func (r *requiredRule) ErrorFormat() string {
-	return r.format
+func (r *requiredRule) SetErrorFormat(f string) BuiltInFieldRule {
+	r.rule.format = f
+	return r
 }
 
-func (r *requiredRule) SetErrorFormat(format string) BuiltInFieldRule {
-	return &requiredRule{
-		format: format,
-	}
+func (r *requiredRule) SetParamsMap(f MapParamsFunc) BuiltInFieldRule {
+	r.rule.mapParams = f
+	return r
 }

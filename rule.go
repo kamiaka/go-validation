@@ -5,11 +5,15 @@ type FieldRule interface {
 	Apply(FieldValue) error
 }
 
+// MapParamsFunc map error params before Error.Params()
+type MapParamsFunc func([]interface{}) []interface{}
+
 // BuiltInFieldRule is validation rule for validation field that can change error format.
 type BuiltInFieldRule interface {
 	FieldRule
 	ErrorFormat() string
 	SetErrorFormat(format string) BuiltInFieldRule
+	SetParamsMap(MapParamsFunc) BuiltInFieldRule
 }
 
 type fieldRule struct {
@@ -42,4 +46,28 @@ func (apply StructRuleFunc) Apply(v Value) error {
 	return apply(v, func(message string, params ...interface{}) error {
 		return newError(v, message, params...)
 	})
+}
+
+type rule struct {
+	format    string
+	mapParams MapParamsFunc
+}
+
+func defaultParamsMap(ls []interface{}) []interface{} {
+	return ls
+}
+
+func newRule(format string) *rule {
+	return &rule{
+		format:    format,
+		mapParams: defaultParamsMap,
+	}
+}
+
+func (r *rule) newError(v Value, params ...interface{}) Errors {
+	return newError(v, r.format, r.mapParams(params)...)
+}
+
+func (r *rule) ErrorFormat() string {
+	return r.format
 }
