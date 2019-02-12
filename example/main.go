@@ -53,8 +53,8 @@ func validateAndPrintError(r *request) {
 	v, _ := validation.NewValidator()
 	err := v.Validate(
 		r,
-		validation.Field("username", &r.Username, validation.Required, validation.StringMaxLength(4)),
-		validation.Field("password", &r.Password, validation.Required, validation.Length(4, 16)),
+		validation.Field("username", &r.Username, validation.Required, validation.CharMaxLength(4)),
+		validation.Field("password", &r.Password, validation.Required, validation.StringLength(4, 16)),
 		validation.Field("mail", &r.Mail, validation.DeepStructRuleFunc(func(v validation.FieldValue) (rules []validation.StructRule, err error) {
 			p := v.Interface().(*mail)
 			return append(rules,

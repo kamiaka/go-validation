@@ -46,32 +46,47 @@ func MaxLength(max int) BuiltInFieldRule {
 	return newLengthRule(MsgMaxLengthFormat, nil, &max)
 }
 
-func reflectStrLength(v reflect.Value) (int, error) {
-	return utf8.RuneCountInString(v.String()), nil
-}
-
-func newStrLengthRule(format string, min, max *int) BuiltInFieldRule {
-	return &lengthRule{
-		rule:   newRule(format),
-		min:    min,
-		max:    max,
-		length: reflectStrLength,
-	}
-}
-
 // StringLength returns a validation rule that checks if a string length is within the specified range.
 func StringLength(min int, max int) BuiltInFieldRule {
-	return newStrLengthRule(MsgStringLengthFormat, &min, &max)
+	return newLengthRule(MsgStringLengthFormat, &min, &max)
 }
 
 // StringMinLength returns a validation rule that checks if a string length is within the specified range.
 func StringMinLength(min int) BuiltInFieldRule {
-	return newStrLengthRule(MsgStringMinLengthFormat, &min, nil)
+	return newLengthRule(MsgStringMinLengthFormat, &min, nil)
 }
 
 // StringMaxLength returns a validation rule that checks if a string length is within the specified range.
 func StringMaxLength(max int) BuiltInFieldRule {
-	return newStrLengthRule(MsgStringMaxLengthFormat, nil, &max)
+	return newLengthRule(MsgStringMaxLengthFormat, nil, &max)
+}
+
+func reflectCharLength(v reflect.Value) (int, error) {
+	return utf8.RuneCountInString(v.String()), nil
+}
+
+// CharLength returns a validation rule that checks if a multibyte string length is within the specified range.
+func CharLength(min int, max int) BuiltInFieldRule {
+	return newCharLengthRule(MsgStringLengthFormat, &min, &max)
+}
+
+// CharMinLength returns a validation rule that checks if a multibyte string length is within the specified range.
+func CharMinLength(min int) BuiltInFieldRule {
+	return newCharLengthRule(MsgStringMinLengthFormat, &min, nil)
+}
+
+// CharMaxLength returns a validation rule that checks if a multibyte string length is within the specified range.
+func CharMaxLength(max int) BuiltInFieldRule {
+	return newCharLengthRule(MsgStringMaxLengthFormat, nil, &max)
+}
+
+func newCharLengthRule(format string, min, max *int) BuiltInFieldRule {
+	return &lengthRule{
+		rule:   newRule(format),
+		min:    min,
+		max:    max,
+		length: reflectCharLength,
+	}
 }
 
 func (r *lengthRule) Apply(f FieldValue) error {
