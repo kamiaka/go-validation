@@ -45,6 +45,7 @@ func (v *arrayValidator) Apply(f FieldValue) error {
 	}
 
 	errs := []Error{}
+FIELD_LOOP:
 	for _, field := range fields {
 		for _, rule := range v.rules {
 			err := rule.Apply(field)
@@ -53,7 +54,7 @@ func (v *arrayValidator) Apply(f FieldValue) error {
 			}
 			if e, ok := err.(Errors); ok {
 				errs = append(errs, e...)
-				continue
+				continue FIELD_LOOP
 			}
 			return err
 		}
