@@ -31,6 +31,7 @@ func (v *arrayValidator) Apply(f FieldValue) error {
 				key:    i,
 				rv:     ls.rv.Index(i),
 				parent: ls,
+				config: ls.config,
 			})
 		}
 	case reflect.Map:
@@ -40,6 +41,7 @@ func (v *arrayValidator) Apply(f FieldValue) error {
 				key:    k.Interface(),
 				rv:     ls.rv.MapIndex(k),
 				parent: ls,
+				config: ls.config,
 			})
 		}
 	}

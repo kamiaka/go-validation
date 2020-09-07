@@ -8,11 +8,11 @@ import (
 )
 
 type request struct {
-	Username string   `json:"username"`
-	Password string   `json:"password"`
-	Mail     *mail    `json:"mail"`
-	Domains  []string `json:"domains"`
-	Type     int      `json:"type"`
+	Username string    `json:"username"`
+	Password string    `json:"password"`
+	Mail     *mail     `json:"mail"`
+	Domains  []*domain `json:"domains"`
+	Type     int       `json:"type"`
 }
 
 type mail struct {
@@ -20,28 +20,43 @@ type mail struct {
 	Quota     int64 `json:"quota"`
 }
 
+type domain struct {
+	Name string `json:"name"`
+}
+
 func main() {
 	// print "ok"
 	validateAndPrintError(&request{
 		Username: "太郎",
 		Password: "abcdefg",
-		Domains:  []string{"example.com"},
-		Type:     42,
+		Domains: []*domain{
+			{
+				Name: "example.com",
+			},
+		},
+		Type: 42,
 	})
 
 	// print `
-	// 	password: password must between 4 and 16
-	// 	mail.isEnabled: using mail is required
+	// 	username: username must be 4 character(s) or less
+	// 	mail.isEnabled: value of using mail is required
 	// 	mail.quota: setting quota requires using mail
-	// 	domains[0]: value of my domains is required
-	// 	domains[1]: my domains must be a valid DNS name
+	// 	domains[0].name: value of domain name is required
+	// 	domains[1].name: domain name must be a valid DNS name
 	// 	type: type must be a valid value
 	// 	: You are foolish!
 	// `
 	validateAndPrintError(&request{
 		Username: "invalid",
-		Password: "ng",
-		Domains:  []string{"", "."},
+		Password: "invalid",
+		Domains: []*domain{
+			{
+				Name: "",
+			},
+			{
+				Name: ".",
+			},
+		},
 		Mail: &mail{
 			Quota: 200,
 		},
@@ -63,7 +78,14 @@ func validateAndPrintError(r *request) {
 			), nil
 		})),
 		validation.Field("my domains", &r.Domains, validation.Required, validation.MaxLength(2), validation.Repeat(
-			validation.Required.SetErrorFormat("value of %[1]v is required"), is.DNSName,
+			validation.Required.SetErrorFormat("value of %[1]v is required"),
+			validation.DeepStructRuleFunc(func(v validation.FieldValue) (rules []validation.StructRule, err error) {
+				domain := v.Interface().(*domain)
+				return append(
+					rules,
+					validation.Field("domain name", &domain.Name, validation.Required, is.DNSName),
+				), nil
+			}),
 		)),
 		validation.Field("type", &r.Type, validation.In("ok", "foo", 42)),
 		validation.StructRuleFunc(func(v validation.Value, e validation.ErrorFunc) error {
